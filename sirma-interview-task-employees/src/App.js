@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import { readString } from 'react-papaparse';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+class App extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  showFile = async (e) => {
+    e.preventDefault()
+    const reader = new FileReader()
+    reader.onload = async (e) => {
+      const text = (e.target.result)
+      console.log(text)
+      // alert(text)
+
+      const parsed = readString(text);
+      console.log(`parsed`, parsed)
+
+    };
+    reader.readAsText(e.target.files[0])
+
+
+
+  }
+
+  render = () => {
+
+    return (<div>
+      <input type="file" onChange={(e) => this.showFile(e)} />
     </div>
-  );
+    )
+  }
 }
 
 export default App;
