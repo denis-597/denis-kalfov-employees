@@ -6,16 +6,36 @@ class App extends Component {
     super(props);
   }
 
+  calculcateDiffBetweenDates = (datePast, dateNow) => {
+    if (dateNow) {
+      dateNow = new Date();
+    }
+    const diffTime = Math.abs(new Date(datePast) - new Date(dateNow));
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  }
+
   showFile = async (e) => {
     e.preventDefault()
     const reader = new FileReader()
     reader.onload = async (e) => {
-      const text = (e.target.result)
-      console.log(text)
-      // alert(text)
+      const parsed = readString(e.target.result);
+      let res = {};
 
-      const parsed = readString(text);
-      console.log(`parsed`, parsed)
+      Object.values(parsed.data).map(p => {
+        if (p && p.length > 0 && Array.isArray(p) && p != '') {
+          if (!res[parseInt(p[1])]) {
+            res[parseInt(p[1])] = []
+          }
+
+          res[parseInt(p[1])].push(
+            { name: p[0], difInDays: this.calculcateDiffBetweenDates(p[2], p[3]) }
+          )
+        }
+
+      })
+
+      console.log(`res`, res)
 
     };
     reader.readAsText(e.target.files[0])
