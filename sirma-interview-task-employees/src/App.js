@@ -31,7 +31,7 @@ class App extends Component {
 
     const diffTime = Math.abs(Date.parse(dateNow) - Date.parse(datePast));
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+    return diffDays + 1;
   }
 
   showFile = async (e) => {
