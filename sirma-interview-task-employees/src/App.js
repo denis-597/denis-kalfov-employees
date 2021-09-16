@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 require('datejs');
 
-const styles = theme => ({
+const styles = ({
   eachRowStyle: {
     '& .MuiPaper-root': {
       padding: 10
@@ -43,16 +43,21 @@ class App extends Component {
     reader.onload = async (e) => {
       const parsed = readString(e.target.result);
 
-      Object.values(parsed.data).map(p => {
-        if (p && p.length > 0 && Array.isArray(p) && p != '') {
-          if (!res[parseInt(p[1])]) { // If object with key [the project id] is not found create it 
-            res[parseInt(p[1])] = {}
+      Object.values(parsed.data).map(row => {
+        let rowEmployee = row[0]
+        let rowProject = parseInt(row[1]);
+        let rowDateFrom = row[2];
+        let rowDateTo = row[3];
+
+        if (row && row.length > 0 && Array.isArray(row) && row != '') {
+          if (!res[rowProject]) { // If object with key [the project id] is not found create it 
+            res[rowProject] = {}
           }
 
-          if (!res[parseInt(p[1])]['empl_' + p[0]]) { // If object with key [the employee id/name] is not found - create it
-            res[parseInt(p[1])]['empl_' + p[0]] = this.calculcateDiffBetweenDates(p[2], p[3])
+          if (!res[rowProject]['empl_' + rowEmployee]) { // If object with key [the employee id/name] is not found - create it
+            res[rowProject]['empl_' + rowEmployee] = this.calculcateDiffBetweenDates(rowDateFrom, rowDateTo)
           } else {
-            res[parseInt(p[1])]['empl_' + p[0]] += this.calculcateDiffBetweenDates(p[2], p[3]) // Sum the value of existing key with the new one
+            res[rowProject]['empl_' + rowEmployee] += this.calculcateDiffBetweenDates(rowDateFrom, rowDateTo) // Sum the value of existing key with the new one
           }
         }
       })
@@ -104,20 +109,25 @@ class App extends Component {
 
           {Object.values(this.state.data).map((r, k) => (
             Object.values(r).slice(0, 1).map((rr, kk) => {
-              return <>
+              let employeeRow = Object.keys(r)[0].split('_')[1];
+              let employeeRowSecond = Object.keys(r)[1].split('_')[1];
+              let projectIdRow = Object.keys(this.state.data)[k]
+              let daysWorkedRow = rr * 1 + (Object.values(r)[kk + 1]) * 1;
+
+              return <React.Fragment key={k} >
                 <Grid item xs={3} className={classes.eachRowStyle}>
-                  <Paper>{Object.keys(r)[0].split('_')[1]}</Paper>
+                  <Paper>{employeeRow}</Paper>
                 </Grid>
                 <Grid item xs={3} className={classes.eachRowStyle}>
-                  <Paper>{Object.keys(r)[1].split('_')[1]}</Paper>
+                  <Paper>{employeeRowSecond}</Paper>
                 </Grid>
                 <Grid item xs={3} className={classes.eachRowStyle}>
-                  <Paper>{Object.keys(this.state.data)[k]}</Paper>
+                  <Paper>{projectIdRow}</Paper>
                 </Grid>
                 <Grid item xs={3} className={classes.eachRowStyle}>
-                  <Paper>{rr + Object.values(r)[kk + 1]}</Paper>
+                  <Paper>{daysWorkedRow}</Paper>
                 </Grid>
-              </>
+              </React.Fragment>
             })
           ))}
 
